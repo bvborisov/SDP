@@ -17,61 +17,57 @@ public class Moving {
         
 		pilot.setTravelSpeed(7);
 
+		boolean reached = false;
 		
-		while (true) {
+		while (!reached) {
 		    int x = lightSensor1.readValue();
 			int y = lightSensor2.readValue();
-			int z;
-			int distance;
-			
-//			Motor.A.setSpeed(550);  
-//			Motor.B.setSpeed(550);
+			float z = 0;
+			float distance = 0;
 		
+			if (x > 40 || y > 40) {
+			    pilot.setRotateSpeed(50);
+			    distance += pilot.getMovementIncrement();
+				while (x > 40 || y > 40) {
+					x = lightSensor1.readValue();
+					y = lightSensor2.readValue();
+     				pilot.rotateLeft();	
+     				z += pilot.getAngleIncrement();
+				}
+			    //z = pilot.getAngleIncrement();
+			    System.out.println(z);
+			    System.out.println(distance);
+				returnBack(x, y, z, distance);
+				reached = true;
+			} else{ 
+				pilot.forward();
+				distance += pilot.getMovementIncrement();
+			}
+		}              
+    }
+	
+	public static void returnBack(int x, int y, float z, float distance) {
+		
+		pilot.setTravelSpeed(7);
+		float angleTurned =0;
+		
+		while (angleTurned < 180) {
+		    x = lightSensor1.readValue();
+			y = lightSensor2.readValue();
+			
 			if (x > 40 || y > 40) {
 			    pilot.setRotateSpeed(50);
 				while (x > 40 || y > 40) {
 					x = lightSensor1.readValue();
 					y = lightSensor2.readValue();
-//					Motor.A.setSpeed(200);
-//					Motor.B.setSpeed(200);
-//					
-//					Motor.A.forward();
-//				    Motor.B.backward();
-					pilot.rotateLeft();
-					
+     				pilot.rotateLeft();
+     				angleTurned += pilot.getAngleIncrement();
 				}
 			}
 			pilot.forward();
-		}
-               
-    }
-	
-	public void returnBack(int distance, int x, int y, int z) {
-		while (true) {
-			x = lightSensor1.readValue();
-			y = lightSensor2.readValue();
-			
-			if (x > 40 || y > 40) {
-
-				Motor.A.backward();
-				Motor.B.backward();
-			
-				while (x > 40 || y > 40) {
-					x = lightSensor1.readValue();
-					y = lightSensor2.readValue();
-					Motor.A.setSpeed(200);
-					Motor.B.setSpeed(200);
-					
-					Motor.A.forward();
-				    Motor.B.backward();
-					
-				}
-				z = Motor.B.getLimitAngle();
-				System.out.println(z);
-				Motor.A.stop();
-				Motor.B.stop();
-
-			}
-		}
+		}  
+		
+		pilot.rotate(-z);
+		pilot.travel(20, false);
 	}	
 }
