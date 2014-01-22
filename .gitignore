@@ -4,4 +4,8 @@
 *.jar
 *.war
 *.ear
+
+*~
+
+##
 /Milestone 1
