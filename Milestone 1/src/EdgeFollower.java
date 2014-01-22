@@ -28,10 +28,11 @@ public class EdgeFollower {
     	RegulatedMotor rightMotor = PilotProps.getMotor(pp.getProperty(PilotProps.KEY_RIGHTMOTOR, "C"));
     	boolean reverse = Boolean.parseBoolean(pp.getProperty(PilotProps.KEY_REVERSE,"false"));
     	
-		final RotateMoveController pilot = new DifferentialPilot(wheelDiameter, trackWidth, leftMotor, rightMotor, reverse);
+		final DifferentialPilot pilot = new DifferentialPilot(wheelDiameter, trackWidth, leftMotor, rightMotor, reverse);
 		leftLight = new LightSensor(SensorPort.S4);
 		rightLight = new LightSensor(SensorPort.S1);
-		pilot.setRotateSpeed(180);
+		pilot.setRotateSpeed(20);
+		pilot.setTravelSpeed(5);
         
 		Behavior DriveForward = new Behavior()
 		{
@@ -57,16 +58,12 @@ public class EdgeFollower {
 			}
 			
 			public void action() {
-				int clockwise = 2;
-				int direction = 1;
-				
-				while (!suppress) {
-					if (seesOnlyGreen()) direction = clockwise*-1;
-					if (seesOnlyWhite()) direction = clockwise*1;
-					
-					pilot.rotate(direction,true);
-					while (!suppress && pilot.isMoving()) Thread.yield();
+				if (seesOnlyGreen()) {
+					pilot.rotateLeft();
+				} else {
+					pilot.rotateRight();
 				}
+				while (!suppress && pilot.isMoving()) Thread.yield();
 				pilot.stop();
 				suppress = false;
 				}
