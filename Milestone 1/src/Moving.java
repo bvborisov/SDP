@@ -7,7 +7,7 @@ public class Moving {
 		
 	static LightSensor lightSensor1 = new LightSensor((ADSensorPort) SensorPort.S1);
 	static LightSensor lightSensor2 = new LightSensor((ADSensorPort) SensorPort.S4);
-	static DifferentialPilot pilot = new DifferentialPilot(2.2f, 5.125f, Motor.A, Motor.B, false);	
+	static DifferentialPilot pilot = new DifferentialPilot(2.2f, 5.0f, Motor.A, Motor.B, true);	
 	
 	public static void main(String[] args) {
         System.out.println("trying out egit");
@@ -37,7 +37,7 @@ public class Moving {
 			}
 		}          
 		
-		while (distance < 30) {
+		while (true) {
 
 		    x = lightSensor1.readValue();
 			y = lightSensor2.readValue();
@@ -53,6 +53,7 @@ public class Moving {
 			} else { 
 				pilot.forward();
 				distance += pilot.getMovementIncrement();
+				System.out.println(distance);
 			}
 		
 		}
