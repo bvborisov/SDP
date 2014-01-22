@@ -10,8 +10,7 @@ public class Moving {
 	static DifferentialPilot pilot = new DifferentialPilot(2.2f, 5f, Motor.A, Motor.B, true);	
 	
 	public static void main(String[] args) {
-        System.out.println("trying out egit");
-		pilot.setTravelSpeed(7);
+        pilot.setTravelSpeed(7);
 
 		boolean reached = false;
 		
