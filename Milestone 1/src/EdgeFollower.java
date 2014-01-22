@@ -12,6 +12,9 @@ import lejos.util.PilotProps;
 
 public class EdgeFollower {
 	
+	static LightSensor leftLight;
+	static LightSensor rightLight;
+	
 	public static void main (String[] aArg)
 	throws Exception
 	{
@@ -24,19 +27,20 @@ public class EdgeFollower {
     	boolean reverse = Boolean.parseBoolean(pp.getProperty(PilotProps.KEY_REVERSE,"false"));
     	
 		final RotateMoveController pilot = new DifferentialPilot(wheelDiameter, trackWidth, leftMotor, rightMotor, reverse);
-		final LightSensor light = new LightSensor(SensorPort.S1);
-                pilot.setRotateSpeed(180);
+		leftLight = new LightSensor(SensorPort.S4);
+		rightLight = new LightSensor(SensorPort.S1);
+		pilot.setRotateSpeed(180);
         
 		Behavior DriveForward = new Behavior()
 		{
-			public boolean takeControl() {return light.readValue() <= 40;}
+			public boolean takeControl() {return seesEdge();}
 			
 			public void suppress() {
 				pilot.stop();
 			}
 			public void action() {
 				pilot.forward();
-                while(light.readValue() <= 40) Thread.yield();
+                while(seesEdge()) Thread.yield();
 			}					
 		};
 		
@@ -44,28 +48,52 @@ public class EdgeFollower {
 		{
 			private boolean suppress = false;
 			
-			public boolean takeControl() {return light.readValue() > 40;}
+			public boolean takeControl() {return !seesEdge();}
 
 			public void suppress() {
 				suppress = true;
 			}
 			
 			public void action() {
-				int sweep = 10;
+				int clockwise = 2;
+				int direction = 1;
+				
 				while (!suppress) {
-					pilot.rotate(sweep,true);
+					if (seesOnlyGreen()) direction = clockwise*-1;
+					if (seesOnlyWhite()) direction = clockwise*1;
+					
+					pilot.rotate(direction,true);
 					while (!suppress && pilot.isMoving()) Thread.yield();
-					sweep *= -2;
 				}
 				pilot.stop();
 				suppress = false;
-			}
+				}
 		};
 
 		Behavior[] bArray = {OffEdge, DriveForward};
         LCD.drawString("EdgeFollower ", 0, 1);
         Button.waitForAnyPress();
 	    (new Arbitrator(bArray)).start();
+	}
+
+	protected static boolean seesOnlyWhite() {
+		return seesWhite(leftLight) && seesWhite(rightLight);
+	}
+
+	protected static boolean seesOnlyGreen() {
+		return seesGreen(leftLight) && seesGreen(rightLight);
+	}
+
+	protected static boolean seesEdge() {
+		return seesWhite(leftLight) != seesWhite(rightLight);
+	}
+	
+	private static boolean seesWhite(LightSensor light) {
+		return light.readValue() > 40;
+	}
+
+	private static boolean seesGreen(LightSensor light) {
+		return light.readValue() <= 40;
 	}
 }
 
