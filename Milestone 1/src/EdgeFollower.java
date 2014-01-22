@@ -15,6 +15,8 @@ public class EdgeFollower {
 	static LightSensor leftLight;
 	static LightSensor rightLight;
 	
+	static boolean foundEdge = false;
+	
 	public static void main (String[] aArg)
 	throws Exception
 	{
@@ -33,7 +35,7 @@ public class EdgeFollower {
         
 		Behavior DriveForward = new Behavior()
 		{
-			public boolean takeControl() {return seesEdge();}
+			public boolean takeControl() {return seesEdge() || !foundEdge;}
 			
 			public void suppress() {
 				pilot.stop();
@@ -89,7 +91,12 @@ public class EdgeFollower {
 	}
 	
 	private static boolean seesWhite(LightSensor light) {
-		return light.readValue() > 40;
+		if (light.readValue() > 40) {
+			foundEdge = true;
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	private static boolean seesGreen(LightSensor light) {
