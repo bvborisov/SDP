@@ -7,7 +7,7 @@ public class Moving {
 		
 	static LightSensor lightSensor1 = new LightSensor((ADSensorPort) SensorPort.S1);
 	static LightSensor lightSensor2 = new LightSensor((ADSensorPort) SensorPort.S4);
-	static DifferentialPilot pilot = new DifferentialPilot(2.2f, 5.0f, Motor.A, Motor.B, true);	
+	static DifferentialPilot pilot = new DifferentialPilot(2.2f, 5f, Motor.A, Motor.B, true);	
 	
 	public static void main(String[] args) {
         System.out.println("trying out egit");
