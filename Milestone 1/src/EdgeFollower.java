@@ -2,38 +2,28 @@
 import lejos.nxt.Button;
 import lejos.nxt.LCD;
 import lejos.nxt.LightSensor;
+import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
-import lejos.robotics.RegulatedMotor;
+import lejos.robotics.localization.OdometryPoseProvider;
 import lejos.robotics.navigation.DifferentialPilot;
-import lejos.robotics.navigation.RotateMoveController;
 import lejos.robotics.subsumption.Arbitrator;
 import lejos.robotics.subsumption.Behavior;
-import lejos.util.PilotProps;
 
 public class EdgeFollower {
 	
-	static LightSensor leftLight;
-	static LightSensor rightLight;
+	static final LightSensor leftLight = new LightSensor(SensorPort.S4);;
+	static final LightSensor rightLight = new LightSensor(SensorPort.S1);;
+	static final DifferentialPilot pilot = new DifferentialPilot(2.2f, 5.0F, Motor.B, Motor.A, true);
+	static final OdometryPoseProvider opp = new OdometryPoseProvider(pilot);
 	
 	static boolean foundEdge = false;
 	
 	public static void main (String[] aArg)
 	throws Exception
 	{
-     	PilotProps pp = new PilotProps();
-    	pp.loadPersistentValues();
-    	float wheelDiameter = Float.parseFloat(pp.getProperty(PilotProps.KEY_WHEELDIAMETER, "2.2"));
-    	float trackWidth = Float.parseFloat(pp.getProperty(PilotProps.KEY_TRACKWIDTH, "5"));
-    	RegulatedMotor leftMotor = PilotProps.getMotor(pp.getProperty(PilotProps.KEY_LEFTMOTOR, "B"));
-    	RegulatedMotor rightMotor = PilotProps.getMotor(pp.getProperty(PilotProps.KEY_RIGHTMOTOR, "A"));
-    	boolean reverse = Boolean.parseBoolean(pp.getProperty(PilotProps.KEY_REVERSE,"true"));
-    	
-		final DifferentialPilot pilot = new DifferentialPilot(wheelDiameter, trackWidth, leftMotor, rightMotor, reverse);
-		leftLight = new LightSensor(SensorPort.S4);
-		rightLight = new LightSensor(SensorPort.S1);
 		pilot.setRotateSpeed(20);
 		pilot.setTravelSpeed(5);
-        
+		
 		Behavior DriveForward = new Behavior()
 		{
 			public boolean takeControl() {return seesEdge() || !foundEdge;}
