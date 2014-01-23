@@ -28,22 +28,9 @@ public class EdgeFollower {
 		pilot.setTravelSpeed(10);
 		pilot.addMoveListener(opp);
 		
-		Behavior Stop = new Behavior()
-		{
-			public boolean takeControl() {return hasReturned();}
-			
-			public void suppress() {
-				pilot.stop();
-			}
-			public void action() {
-				pilot.stop();
-				while(true);
-			}					
-		};
-		
 		Behavior DriveForward = new Behavior()
 		{
-			public boolean takeControl() {return seesEdge() || !foundEdge;}
+			public boolean takeControl() {return (seesEdge() || !foundEdge) && !hasReturned();}
 			
 			public void suppress() {
 				pilot.stop();
@@ -58,7 +45,7 @@ public class EdgeFollower {
 		{
 			private boolean suppress = false;
 			
-			public boolean takeControl() {return !seesEdge();}
+			public boolean takeControl() {return !seesEdge() && !hasReturned();}
 
 			public void suppress() {
 				pilot.stop();
@@ -78,10 +65,11 @@ public class EdgeFollower {
 				}
 		};
 
-		Behavior[] bArray = {OffEdge, DriveForward, Stop};
+		Behavior[] bArray = {OffEdge, DriveForward};
         LCD.drawString("EdgeFollower ", 0, 1);
         Button.waitForAnyPress();
-	    (new Arbitrator(bArray)).start();
+		(new Arbitrator(bArray, true)).start();
+		Button.waitForAnyPress();
 	}
 
 	protected static boolean hasReturned() {
