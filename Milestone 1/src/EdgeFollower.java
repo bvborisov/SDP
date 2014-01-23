@@ -6,6 +6,7 @@ import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
 import lejos.robotics.localization.OdometryPoseProvider;
 import lejos.robotics.navigation.DifferentialPilot;
+import lejos.robotics.navigation.Pose;
 import lejos.robotics.subsumption.Arbitrator;
 import lejos.robotics.subsumption.Behavior;
 
@@ -16,13 +17,27 @@ public class EdgeFollower {
 	static final DifferentialPilot pilot = new DifferentialPilot(2.2f, 5.0F, Motor.B, Motor.A, true);
 	static final OdometryPoseProvider opp = new OdometryPoseProvider(pilot);
 	
-	static boolean foundEdge = false;
+	private static boolean foundEdge = false;
+	private static boolean departed = false;
+	private static boolean returned = false;
 	
 	public static void main (String[] aArg)
 	throws Exception
 	{
 		pilot.setRotateSpeed(20);
 		pilot.setTravelSpeed(5);
+		Behavior Stop = new Behavior()
+		{
+			public boolean takeControl() {return hasReturned();}
+			
+			public void suppress() {
+				pilot.stop();
+			}
+			public void action() {
+				pilot.stop();
+				while(true);
+			}					
+		};
 		
 		Behavior DriveForward = new Behavior()
 		{
@@ -44,25 +59,60 @@ public class EdgeFollower {
 			public boolean takeControl() {return !seesEdge();}
 
 			public void suppress() {
-				suppress = true;
+				pilot.stop();
 			}
 			
 			public void action() {
 				if (seesOnlyGreen()) {
-					pilot.rotateLeft();
-				} else {
 					pilot.rotateRight();
+					while (!suppress && seesOnlyGreen()) Thread.yield();
+				} else {
+					pilot.rotateLeft();
+					while (!suppress && seesOnlyWhite()) Thread.yield();
 				}
-				while (!suppress && pilot.isMoving()) Thread.yield();
+				
 				pilot.stop();
 				suppress = false;
 				}
 		};
 
-		Behavior[] bArray = {OffEdge, DriveForward};
+		Behavior[] bArray = {OffEdge, DriveForward, Stop};
         LCD.drawString("EdgeFollower ", 0, 1);
         Button.waitForAnyPress();
 	    (new Arbitrator(bArray)).start();
+	}
+
+	protected static boolean hasReturned() {
+		//System.out.println(opp.getPose());//#TODO
+		System.out.println(" D:"+displacement());//#TODO
+		if (hasDeparted() && (displacement() < 5)) {
+			returned = true;
+		}
+		return returned;
+	}
+
+	private static boolean hasDeparted() {
+		if (hasFoundEdge() && (displacement() > 15)) {
+			departed = true;
+		}
+		
+		return departed;
+	}
+
+	private static boolean hasFoundEdge() {
+		if (!foundEdge && seesWhite()) {
+			pilot.stop();
+			opp.setPose(new Pose());
+			foundEdge = true;
+		}
+		return foundEdge;
+	}
+
+	private static double displacement() {
+		return Math.sqrt(
+				Math.pow(opp.getPose().getX(), 2)+
+				Math.pow(opp.getPose().getY(), 2)
+				);
 	}
 
 	protected static boolean seesOnlyWhite() {
@@ -77,13 +127,11 @@ public class EdgeFollower {
 		return seesWhite(leftLight) != seesWhite(rightLight);
 	}
 	
+	private static boolean seesWhite() {
+		return seesWhite(leftLight) || seesWhite(rightLight);
+	}
 	private static boolean seesWhite(LightSensor light) {
-		if (light.readValue() > 40) {
-			foundEdge = true;
-			return true;
-		} else {
-			return false;
-		}
+		return light.readValue() > 40;
 	}
 
 	private static boolean seesGreen(LightSensor light) {
