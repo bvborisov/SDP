@@ -26,6 +26,7 @@ public class EdgeFollower {
 	{
 		pilot.setRotateSpeed(20);
 		pilot.setTravelSpeed(10);
+		pilot.addMoveListener(opp);
 		
 		Behavior Stop = new Behavior()
 		{
