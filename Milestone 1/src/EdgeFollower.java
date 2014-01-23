@@ -14,7 +14,7 @@ public class EdgeFollower {
 	
 	static final LightSensor leftLight = new LightSensor(SensorPort.S4);;
 	static final LightSensor rightLight = new LightSensor(SensorPort.S1);;
-	static final DifferentialPilot pilot = new DifferentialPilot(2.2f, 5.0F, Motor.B, Motor.A, true);
+	static final DifferentialPilot pilot = new DifferentialPilot(5.6, 9.7, Motor.B, Motor.A, true);
 	static final OdometryPoseProvider opp = new OdometryPoseProvider(pilot);
 	
 	private static boolean foundEdge = false;
@@ -25,7 +25,8 @@ public class EdgeFollower {
 	throws Exception
 	{
 		pilot.setRotateSpeed(20);
-		pilot.setTravelSpeed(5);
+		pilot.setTravelSpeed(10);
+		
 		Behavior Stop = new Behavior()
 		{
 			public boolean takeControl() {return hasReturned();}
