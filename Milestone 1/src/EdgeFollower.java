@@ -58,9 +58,9 @@ public class EdgeFollower {
 		System.out.println("PRESS ANY BUTTON");
 		Button.waitForAnyPress();
 	}
-
+	
 	private static boolean keepMoving() {
-		return departed && returned && isDeparting();
+		return !(hasReturned() && isDeparting());
 	}
 
 	protected static boolean hasReturned() {
