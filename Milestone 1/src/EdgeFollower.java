@@ -28,7 +28,7 @@ public class EdgeFollower {
 		while (!hasReturned()) {
 			if (seesEdge() || !foundEdge) {
 				pilot.forward();
-				while (seesEdge() && !hasReturned()) {
+				while ((seesEdge() || !foundEdge) && !hasReturned()) {
 					//Keeping moving forward
 				}
 				pilot.stop();
