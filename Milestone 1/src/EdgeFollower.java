@@ -26,7 +26,7 @@ public class EdgeFollower {
 		System.out.println("EdgeFollower\n(No Behaviours)");
 		Button.waitForAnyPress();
 		
-		while (!hasReturned()) {
+		while (keepMoving()) {
 			if (seesEdge() || !foundEdge) {
 				pilot.setTravelSpeed(10);
 				pilot.forward();
@@ -57,8 +57,12 @@ public class EdgeFollower {
 		Button.waitForAnyPress();
 	}
 
+	private static boolean keepMoving() {
+		return departed && returned && isDeparting();
+	}
+
 	protected static boolean hasReturned() {
-		if (hasDeparted() && isAtHome() && isDeparting()) {
+		if (hasDeparted() && (displacement() < 5)) {
 			returned = true;
 		}
 		return returned;
@@ -71,15 +75,11 @@ public class EdgeFollower {
 	}
 
 	private static boolean hasDeparted() {
-		if (hasFoundEdge() && !isAtHome()) {
+        if (hasFoundEdge() && (displacement() > 10)) {
 			departed = true;
 		}
 
 		return departed;
-	}
-
-	private static boolean isAtHome() {
-		return displacement() < 15;
 	}
 
 	private static boolean hasFoundEdge() {
