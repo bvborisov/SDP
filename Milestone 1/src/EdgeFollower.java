@@ -16,10 +16,10 @@ public class EdgeFollower {
 	private static boolean foundEdge = false;
 	private static boolean departed = false;
 	private static boolean returned = false;
+	
+	private static double minDisplacement = -1;
 
 	public static void main(String[] aArg) throws Exception {
-		pilot.setRotateSpeed(20);
-		pilot.setTravelSpeed(10);
 		pilot.addMoveListener(opp);
 		
 		System.out.println("EdgeFollower\n(No Behaviours)");
@@ -27,13 +27,15 @@ public class EdgeFollower {
 		
 		while (!hasReturned()) {
 			if (seesEdge() || !foundEdge) {
+				pilot.setTravelSpeed(10);
 				pilot.forward();
 				while ((seesEdge() || !foundEdge) && !hasReturned()) {
-					//Keeping moving forward
+					//Keep moving forward
 				}
 				pilot.stop();
 			}
 			else if (seesOnlyGreen()) {
+				pilot.setTravelSpeed(5);
 				pilot.rotateRight();
 				while (seesOnlyGreen()) {
 					//Keep rotating
@@ -41,6 +43,7 @@ public class EdgeFollower {
 				pilot.stop();
 			}
 			else if (seesOnlyWhite()) {
+				pilot.setTravelSpeed(5);
 				pilot.rotateLeft();
 				while (seesOnlyWhite()) {
 					//Keep rotating
@@ -54,9 +57,7 @@ public class EdgeFollower {
 	}
 
 	protected static boolean hasReturned() {
-		// System.out.println(opp.getPose());//#TODO
-		System.out.println(" D:" + displacement());// #TODO
-		if (hasDeparted() && (displacement() < 5)) {
+		if (hasDeparted() && (displacement() < 1)) {
 			returned = true;
 		}
 		return returned;
@@ -72,7 +73,6 @@ public class EdgeFollower {
 
 	private static boolean hasFoundEdge() {
 		if (!foundEdge && seesWhite()) {
-			pilot.stop();
 			opp.setPose(new Pose());
 			foundEdge = true;
 		}
@@ -80,9 +80,14 @@ public class EdgeFollower {
 	}
 
 	private static double displacement() {
-		return Math.sqrt(
+		double d = Math.sqrt(
 				Math.pow(opp.getPose().getX(), 2) + 
 				Math.pow(opp.getPose().getY(), 2));
+		if ((d < minDisplacement || minDisplacement < 0) && departed) {
+			minDisplacement = d;
+			System.out.println("MIN " + minDisplacement);// #TODO
+		}
+		return d;
 	}
 
 	protected static boolean seesOnlyWhite() {
