@@ -24,57 +24,34 @@ public class EdgeFollower {
 		pilot.setRotateSpeed(20);
 		pilot.setTravelSpeed(10);
 		pilot.addMoveListener(opp);
-
-		Behavior DriveForward = new Behavior() {
-			public boolean takeControl() {
-				return (seesEdge() || !foundEdge) && !hasReturned();
-			}
-
-			public void suppress() {
-				pilot.stop();
-			}
-
-			public void action() {
-				pilot.forward();
-				while (seesEdge()) {
-					Thread.yield();
-				}
-			}
-		};
-
-		Behavior OffEdge = new Behavior() {
-			private boolean suppress = false;
-
-			public boolean takeControl() {
-				return !seesEdge() && !hasReturned();
-			}
-
-			public void suppress() {
-				pilot.stop();
-			}
-
-			public void action() {
-				if (seesOnlyGreen()) {
-					pilot.rotateRight();
-					while (!suppress && seesOnlyGreen()) {
-						Thread.yield();
-					}
-				} else {
-					pilot.rotateLeft();
-					while (!suppress && seesOnlyWhite()) {
-						Thread.yield();
-					}
-				}
-
-				pilot.stop();
-				suppress = false;
-			}
-		};
-
-		Behavior[] bArray = { OffEdge, DriveForward };
-		LCD.drawString("EdgeFollower ", 0, 1);
+		
+		LCD.drawString("EdgeFollower\n(No Behaviours)", 0, 1);
 		Button.waitForAnyPress();
-		(new Arbitrator(bArray, true)).start();
+		
+		while (!hasReturned()) {
+			if (seesEdge() || !foundEdge) {
+				pilot.forward();
+				while (seesEdge() && !hasReturned()) {
+					
+				}
+				pilot.stop();
+			}
+			else if (seesOnlyGreen()) {
+				pilot.rotateRight();
+				while (seesOnlyGreen()) {
+					
+				}
+				pilot.stop();
+			}
+			else if (seesOnlyWhite()) {
+				pilot.rotateLeft();
+				while (seesOnlyWhite()) {
+					
+				}
+				pilot.stop();
+			}
+		}
+		
 		Button.waitForAnyPress();
 	}
 
