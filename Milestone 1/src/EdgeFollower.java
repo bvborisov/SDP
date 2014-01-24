@@ -12,13 +12,14 @@ public class EdgeFollower {
 	static final LightSensor rightLight = new LightSensor(SensorPort.S1);;
 	static final DifferentialPilot pilot = new DifferentialPilot(5.6, 9.7, Motor.B, Motor.A, true);
 	static final OdometryPoseProvider opp = new OdometryPoseProvider(pilot);
-
+	
 	private static boolean foundEdge = false;
 	private static boolean departed = false;
 	private static boolean returned = false;
+	private static boolean stopped = false;
 	
-	private static double minDisplacement = -1;
-	private static double lastDisplacement;
+	private static double currentDisplacement;
+	private static double minDisplacement;
 
 	public static void main(String[] aArg) throws Exception {
 		pilot.addMoveListener(opp);
@@ -27,80 +28,76 @@ public class EdgeFollower {
 		System.out.println("PRESS ANY BUTTON");
 		Button.waitForAnyPress();
 		
-		while (keepMoving()) {
-			if (seesEdge() || !foundEdge) {
+		while (!stop()) {
+			if (seesOnlyGreen()) {
 				pilot.setTravelSpeed(10);
 				pilot.forward();
-				while ((seesEdge() || !foundEdge) && !hasReturned()) {
+				while (seesOnlyGreen() && !stop()) {
 					//Keep moving forward
 				}
 				pilot.stop();
 			}
-			else if (seesOnlyGreen()) {
-				pilot.setTravelSpeed(5);
-				pilot.rotateRight();
-				while (seesOnlyGreen()) {
-					//Keep rotating
-				}
-				pilot.stop();
-			}
-			else if (seesOnlyWhite()) {
+			else if (seesWhite()) {
 				pilot.setTravelSpeed(5);
 				pilot.rotateLeft();
-				while (seesOnlyWhite()) {
+				while (seesWhite()) {
 					//Keep rotating
 				}
 				pilot.stop();
 			}
 		}
-		
-		System.out.println("ÁDONE!");
 		System.out.println("PRESS ANY BUTTON");
 		Button.waitForAnyPress();
 	}
 	
-	private static boolean keepMoving() {
-		return !(hasReturned() && isDeparting());
+	private static boolean stop() {
+		if (stopped) return true;
+		updateDisplacements();
+		if (hasReturned() && currentDisplacement-minDisplacement > 0.5) {
+			System.out.println("STOPPED");
+			stopped = true;
+			return true;
+		}else return false;
 	}
-
-	protected static boolean hasReturned() {
-		if (hasDeparted() && (displacement() < 5)) {
+	
+	private static boolean hasReturned() {
+		if (returned) return true;
+		if (hasDeparted() && currentDisplacement < 10) {
+			System.out.println("RETURNED");
 			returned = true;
-		}
-		return returned;
+			return true;
+		}else return false;
 	}
-
-	private static boolean isDeparting() {
-		double currentDisplacement = displacement();
-		boolean result = currentDisplacement > lastDisplacement;
-		return result;
-	}
-
+	
 	private static boolean hasDeparted() {
-        if (hasFoundEdge() && (displacement() > 10)) {
+		if (departed) return true;
+		if (hasFoundEdge() && currentDisplacement > 20) {
+			System.out.println("DEPARTED");
 			departed = true;
-		}
-
-		return departed;
+			return true;
+		} else return false;
 	}
-
+	
 	private static boolean hasFoundEdge() {
-		if (!foundEdge && seesWhite()) {
+		if (foundEdge) return true;
+		if (seesWhite()) {
 			opp.setPose(new Pose());
+			updateDisplacements();
+			
 			foundEdge = true;
-		}
-		return foundEdge;
+			System.out.println("FOUND LINE");
+			return true;
+		}else return false;
 	}
-
-	private static double displacement() {
-		double d = Math.sqrt(
+	
+	private static void updateDisplacements() {
+		currentDisplacement = Math.sqrt(
 				Math.pow(opp.getPose().getX(), 2) + 
 				Math.pow(opp.getPose().getY(), 2));
-		if ((d < minDisplacement || minDisplacement < 0) && departed) {
-			minDisplacement = d;
-			System.out.println("MIN " + ((int)(minDisplacement*100))/100.0);// #TODO
+		
+		if ((currentDisplacement < minDisplacement) && hasDeparted()) {
+			minDisplacement = currentDisplacement;
 		}
-		return d;
 	}
 
 	protected static boolean seesOnlyWhite() {
