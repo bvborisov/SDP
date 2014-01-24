@@ -18,6 +18,7 @@ public class EdgeFollower {
 	private static boolean returned = false;
 	
 	private static double minDisplacement = -1;
+	private static double lastDisplacement;
 
 	public static void main(String[] aArg) throws Exception {
 		pilot.addMoveListener(opp);
@@ -57,18 +58,28 @@ public class EdgeFollower {
 	}
 
 	protected static boolean hasReturned() {
-		if (hasDeparted() && (displacement() < 1)) {
+		if (hasDeparted() && isAtHome() && isDeparting()) {
 			returned = true;
 		}
 		return returned;
 	}
 
+	private static boolean isDeparting() {
+		double currentDisplacement = displacement();
+		boolean result = currentDisplacement > lastDisplacement;
+		return result;
+	}
+
 	private static boolean hasDeparted() {
-		if (hasFoundEdge() && (displacement() > 15)) {
+		if (hasFoundEdge() && !isAtHome()) {
 			departed = true;
 		}
 
 		return departed;
+	}
+
+	private static boolean isAtHome() {
+		return displacement() < 15;
 	}
 
 	private static boolean hasFoundEdge() {
