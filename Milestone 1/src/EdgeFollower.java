@@ -25,7 +25,7 @@ public class EdgeFollower {
 		pilot.setTravelSpeed(10);
 		pilot.addMoveListener(opp);
 		
-		LCD.drawString("EdgeFollower\n(No Behaviours)", 0, 1);
+		System.out.println("EdgeFollower\n(No Behaviours)");
 		Button.waitForAnyPress();
 		
 		while (!hasReturned()) {
@@ -52,6 +52,7 @@ public class EdgeFollower {
 			}
 		}
 		
+		System.out.println("ÁDONE!");
 		Button.waitForAnyPress();
 	}
 
