@@ -23,7 +23,8 @@ public class EdgeFollower {
 	public static void main(String[] aArg) throws Exception {
 		pilot.addMoveListener(opp);
 		
-		System.out.println("EdgeFollower\n(No Behaviours)");
+		System.out.println("EdgeFollower");
+		System.out.println("PRESS ANY BUTTON");
 		Button.waitForAnyPress();
 		
 		while (keepMoving()) {
@@ -54,6 +55,7 @@ public class EdgeFollower {
 		}
 		
 		System.out.println("ÁDONE!");
+		System.out.println("PRESS ANY BUTTON");
 		Button.waitForAnyPress();
 	}
 
@@ -96,7 +98,7 @@ public class EdgeFollower {
 				Math.pow(opp.getPose().getY(), 2));
 		if ((d < minDisplacement || minDisplacement < 0) && departed) {
 			minDisplacement = d;
-			System.out.println("MIN " + minDisplacement);// #TODO
+			System.out.println("MIN " + ((int)(minDisplacement*100))/100.0);// #TODO
 		}
 		return d;
 	}
