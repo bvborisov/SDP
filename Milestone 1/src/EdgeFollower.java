@@ -1,13 +1,10 @@
 import lejos.nxt.Button;
-import lejos.nxt.LCD;
 import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
 import lejos.robotics.localization.OdometryPoseProvider;
 import lejos.robotics.navigation.DifferentialPilot;
 import lejos.robotics.navigation.Pose;
-import lejos.robotics.subsumption.Arbitrator;
-import lejos.robotics.subsumption.Behavior;
 
 public class EdgeFollower {
 
@@ -32,21 +29,21 @@ public class EdgeFollower {
 			if (seesEdge() || !foundEdge) {
 				pilot.forward();
 				while (seesEdge() && !hasReturned()) {
-					
+					//Keeping moving forward
 				}
 				pilot.stop();
 			}
 			else if (seesOnlyGreen()) {
 				pilot.rotateRight();
 				while (seesOnlyGreen()) {
-					
+					//Keep rotating
 				}
 				pilot.stop();
 			}
 			else if (seesOnlyWhite()) {
 				pilot.rotateLeft();
 				while (seesOnlyWhite()) {
-					
+					//Keep rotating
 				}
 				pilot.stop();
 			}
