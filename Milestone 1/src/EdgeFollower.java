@@ -38,6 +38,7 @@ public class EdgeFollower {
 	private static boolean clockwise;
 	private static double currentDisplacement;
 	private static double minDisplacement;
+	private static Pose home;
 
 	public static void main(String[] aArg) throws Exception {
 		//Allows the pose to be updated also during a movement and not just after
@@ -79,10 +80,30 @@ public class EdgeFollower {
 				pilot.stop();
 			}
 		}
-		System.out.println("PRESS ANY BUTTON");
+		System.out.println("DONE!");
+		System.out.println("Can I go home?");
 		Button.waitForAnyPress();
+		goHome();
 	}
 	
+	private static void goHome() {
+		double angle = 180-home.getHeading();
+		double distance = euclideanDistance(opp.getPose().getX()-home.getX(),  opp.getPose().getY()-home.getY());
+		
+		pilot.rotate(angle);
+		while (pilot.isMoving()) {
+			
+		}
+		pilot.travel(distance);
+		while (pilot.isMoving()) {
+			
+		}
+		pilot.rotate(opp.getPose().getHeading()-home.getHeading());
+		while (pilot.isMoving()) {
+			
+		}
+	}
+
 	/*
 	 * The robot should stop once it is in the return zone and 
 	 * the displacement from the origin starts increasing.
@@ -134,6 +155,9 @@ public class EdgeFollower {
 			 * origin in its positioning system. It also updates displacement values
 			 * as these should now be 0;
 			 */
+			Pose pose = opp.getPose();
+			home = new Pose(-pose.getX(), -pose.getY(), -pose.getHeading());
+			
 			opp.setPose(new Pose());
 			updateDisplacements();
 			
@@ -145,7 +169,7 @@ public class EdgeFollower {
 				System.out.println("CLOCKWISE");
 			}else {
 				clockwise = false;
-				System.out.println("COUNTER-CLOCKWISE");
+				System.out.println("COUNTERCLOCKWISE");
 			} 
 			return true;
 		}else return false;
@@ -156,13 +180,17 @@ public class EdgeFollower {
 	 * the current position of the robot.
 	 */
 	private static void updateDisplacements() {
-		currentDisplacement = Math.sqrt(
-				Math.pow(opp.getPose().getX(), 2) + 
-				Math.pow(opp.getPose().getY(), 2));
+		currentDisplacement = euclideanDistance(opp.getPose().getX(), opp.getPose().getY());
 		
 		if ((currentDisplacement < minDisplacement) && hasDeparted()) {
 			minDisplacement = currentDisplacement;
 		}
+	}
+
+	private static double euclideanDistance(double x, double y) {
+		return Math.sqrt(
+				Math.pow(x, 2) + 
+				Math.pow(y, 2));
 	}
 
 	protected static boolean seesOnlyWhite() {
