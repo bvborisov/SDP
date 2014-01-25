@@ -21,6 +21,8 @@ public class EdgeFollower {
 	static final LightSensor rightLight = new LightSensor(SensorPort.S1);;
 	static final DifferentialPilot pilot = new DifferentialPilot(5.6, 9.7, Motor.B, Motor.A, true);
 	static final OdometryPoseProvider opp = new OdometryPoseProvider(pilot);
+	private static double rotateSpeed = 5;
+	private static double travelSpeed = 10;
 	
 	/*
 	 * Flags to keep track of what conditions have been satisfied
@@ -31,8 +33,9 @@ public class EdgeFollower {
 	private static boolean stopped = false;
 	
 	/*
-	 * Fields to keep track of displacement
+	 * Fields to keep track of movement
 	 */
+	private static boolean clockwise;
 	private static double currentDisplacement;
 	private static double minDisplacement;
 
@@ -51,7 +54,7 @@ public class EdgeFollower {
 			 * try to always have both sensors over a green area. 
 			 */
 			if (seesOnlyGreen()) {
-				pilot.setTravelSpeed(10);
+				pilot.setTravelSpeed(travelSpeed);
 				pilot.forward();
 				while (seesOnlyGreen() && !stop()) {
 					/*
@@ -62,8 +65,12 @@ public class EdgeFollower {
 				pilot.stop();
 			}
 			else if (seesSomeWhite()) {
-				pilot.setTravelSpeed(5);
-				pilot.rotateLeft();
+				pilot.setTravelSpeed(rotateSpeed);
+				if (clockwise) {
+					pilot.rotateLeft();
+				}else {
+					pilot.rotateRight();
+				}
 				while (seesSomeWhite()) {
 					/*
 					 * The robot keeps rotating left until is only sees green
@@ -132,6 +139,14 @@ public class EdgeFollower {
 			
 			foundEdge = true;
 			System.out.println("FOUND LINE");
+			
+			if (seesWhite(rightLight)) {
+				clockwise = true;
+				System.out.println("CLOCKWISE");
+			}else {
+				clockwise = false;
+				System.out.println("COUNTER-CLOCKWISE");
+			} 
 			return true;
 		}else return false;
 	}
