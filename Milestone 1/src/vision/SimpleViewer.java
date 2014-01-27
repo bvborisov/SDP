@@ -1,9 +1,12 @@
 package vision;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.List;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -154,14 +157,16 @@ public class SimpleViewer extends WindowAdapter implements CaptureCallback{
 
         		//int[] window;// = new int[9];
         		int windowSize = 3;
+        		
+        		ArrayList<int[]> probCoords = new ArrayList<int[]>();
         		for(int i = 0; i < 639; i=i+3){
         			for(int j=0; j < 480; j=j+3){
         				
         				
-        				int[] window = img.getRGB(i, j, 1, 1, null, 0, windowSize);
+        				int[] window = img.getRGB(i, j, 3, 3, null, 0, windowSize);
         				int redCount = 0;
         				
-        				for(int k=0; k < windowSize; k++){
+        				for(int k=0; k < windowSize*windowSize; k++){
         					Color C1 = new Color(window[k]);
         					
         					//color distance function, needs to be factored out
@@ -171,24 +176,38 @@ public class SimpleViewer extends WindowAdapter implements CaptureCallback{
         					int blue = C1.getBlue();
         					int green = C1.getGreen();
         					double distance = Math.sqrt((2.0 + rmean/256.0)*red*red + 4*green*green + (2 + (256 - rmean)/256.0)*blue*blue);
+        					//double distance = Math.sqrt(Math.pow(red/red, 2)+Math.pow(green/red, 2)+Math.pow(blue/red, 2));
         					
-    
         					
-        					if (distance < 100){//some threshold needs tuning
-        						System.out.println("distance is " + distance);
+        					if (distance < 200){//some threshold needs tuning
+        						//System.out.println("distance is " + distance);
         						redCount++;
+        						//System.out.println(i + " " + j + " " +)
         					}
         					
         				}
-        				if(redCount > 1){//threshold, needs tuning
-        					System.out.println("I may have found the ball at " + i + " " + j);
+        				if(redCount > 7){//threshold, needs tuning
+        					
+//        					System.out.println("I may have found the ball at " + i + " " + j + " red count is "
+//        							+ redCount);
+        					int[] tuple = {i,j};
+        					probCoords.add(tuple);
+        					
         				}
    
         			}
         		}
-        		
-                label.getGraphics().drawImage(img, 0, 0, width, height, null);
-                
+        		Graphics2D g = (Graphics2D) label.getGraphics();
+                g.drawImage(img, 0, 0, width, height, null);
+                if(probCoords.size() > 0){
+                	
+                	g.setColor(Color.PINK);
+                	g.drawOval(
+                		probCoords.get(0)[0], 
+                		probCoords.get(0)[1], 
+                		15,
+                		15);
+                }
                 // recycle the frame
                 frame.recycle();
         }
