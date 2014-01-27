@@ -141,67 +141,84 @@ public class SimpleViewer extends WindowAdapter implements CaptureCallback{
                 e.printStackTrace();
         }
 
+        /*
+        This method contains all the current vision code and the frame handling code.
+        The frame handling code is quite simple - it just fetches the frame from
+        the video device and writes it to the JPabel window.
+        
+        The vision code is marked down and commented
+        */
         @Override
         public void nextFrame(VideoFrame frame) {
                 // This method is called when a new frame is ready.
                 // Don't forget to recycle it when done dealing with the frame.
                 
-        		long thisFrame = System.currentTimeMillis();
-        		int frameRate = (int) (1000 / (thisFrame - lastFrame));
-        		lastFrame = thisFrame;
-        		
-        		//System.out.println(frameRate);
+                /* This piece of code calculates the frame rate
+                I don't know if it will be useful but it coudl be used
+                code copied over from SDP group 4 last year
+                */
+                
+        	long thisFrame = System.currentTimeMillis();
+        	int frameRate = (int) (1000 / (thisFrame - lastFrame));
+        	lastFrame = thisFrame;
         	
-        		BufferedImage img = frame.getBufferedImage();
-//                // draw the new frame onto the JLabel
-
-        		//int[] window;// = new int[9];
-        		int windowSize = 3;
+                BufferedImage img = frame.getBufferedImage();
+                
+                /* Vision code:
+                We swipe a windowSize x windowSize window across the image
+                and for each window we compute how many of the pixels inside of it
+                are "close" to true red(255,0,0) by using some heuristic euclidean distance
+                based RGB function, see link for more info.
+                
+                If the count of the number of pixels is more than 7 we push the coordinates
+                of the window to a list of possible coords
+                
+                Finally we select the first coordinate pair from the list and we
+                draw an oval arround that point - it should represent the rough 
+                position of the ball.
+                
+                TODO: 
+                1. check threshhold for distance function, make it ignore Yellow
+                2. somehow use other probable coordinate pairs
+                3. we report top right coordinate of a window, should it be something else though?
+                4. replace all values of 3 with windowSize
+                5. factor out color distance function if needed someplace else
+                */
+                
+        	int windowSize = 3; //arbitrary
         		
-        		ArrayList<int[]> probCoords = new ArrayList<int[]>();
-        		for(int i = 0; i < 639; i=i+3){
-        			for(int j=0; j < 480; j=j+3){
-        				
-        				
-        				int[] window = img.getRGB(i, j, 3, 3, null, 0, windowSize);
-        				int redCount = 0;
-        				
-        				for(int k=0; k < windowSize*windowSize; k++){
-        					Color C1 = new Color(window[k]);
-        					
-        					//color distance function, needs to be factored out
-        					//ref - http://www.compuphase.com/cmetric.htm
-        					int rmean = (C1.getRed() + 255)/2;
-        					int red = C1.getRed() - 255;
-        					int blue = C1.getBlue();
-        					int green = C1.getGreen();
-        					double distance = Math.sqrt((2.0 + rmean/256.0)*red*red + 4*green*green + (2 + (256 - rmean)/256.0)*blue*blue);
-        					//double distance = Math.sqrt(Math.pow(red/red, 2)+Math.pow(green/red, 2)+Math.pow(blue/red, 2));
-        					
-        					
-        					if (distance < 200){//some threshold needs tuning
-        						//System.out.println("distance is " + distance);
-        						redCount++;
-        						//System.out.println(i + " " + j + " " +)
-        					}
-        					
+        	ArrayList<int[]> probCoords = new ArrayList<int[]>();
+        	for(int i = 0; i < 639; i=i+3){
+        		for(int j=0; j < 480; j=j+3){
+        			int[] window = img.getRGB(i, j, 3, 3, null, 0, windowSize); // get rgb values, stores as ints for some reason...
+        			int redCount = 0; 
+        			for(int k=0; k < windowSize*windowSize; k++){
+					Color C1 = new Color(window[k]); // 
+        				//color distance function, needs to be factored out
+        				//ref - http://www.compuphase.com/cmetric.htm
+        				// our implicit C2 color is True Red(255,0,0), see above link
+        				int rmean = (C1.getRed() + 255)/2; // the 255 here comes from implicit True Red
+        				int red = C1.getRed() - 255;
+        				int blue = C1.getBlue();
+        				int green = C1.getGreen();
+        				double distance = Math.sqrt((2.0 + rmean/256.0)*red*red + 4*green*green + (2 + (256 - rmean)/256.0)*blue*blue);
+        				if (distance < 200){// some arbitrary threshold needs fine tuning, rough tuning ok
+        					redCount++;
+        					//TODO 1: ignore yellow
         				}
-        				if(redCount > 7){//threshold, needs tuning
-        					
-//        					System.out.println("I may have found the ball at " + i + " " + j + " red count is "
-//        							+ redCount);
-        					int[] tuple = {i,j};
-        					probCoords.add(tuple);
-        					
-        				}
-   
+        			}
+        			if(redCount > 7){// arbitrary threshold, needs tuning
+        				int[] tuple = {i,j};
+        				probCoords.add(tuple);
         			}
         		}
-        		Graphics2D g = (Graphics2D) label.getGraphics();
+        	}
+        	Graphics2D g = (Graphics2D) label.getGraphics();
+        	// this draws the frame grabber
                 g.drawImage(img, 0, 0, width, height, null);
                 if(probCoords.size() > 0){
-                	
-                	g.setColor(Color.PINK);
+                        // draws a pink oval around the ball
+                        g.setColor(Color.PINK);
                 	g.drawOval(
                 		probCoords.get(0)[0], 
                 		probCoords.get(0)[1], 
