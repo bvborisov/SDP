@@ -7,7 +7,6 @@
 			<attribute name="javadoc_location" value="http://v4l4j.googlecode.com/svn/www/v4l4j-api"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/afs/inf.ed.ac.uk/user/s11/s1101380/Desktop/boofcv-v0.16-libs/xstream-1.4.4.jar"/>
 	<classpathentry kind="lib" path="/group/teaching/sdp/sdp4/boofcv-v0.16-libs/BoofCV.jar"/>
 	<classpathentry kind="lib" path="/afs/inf.ed.ac.uk/group/teaching/sdp/sdp4/boofcv-v0.16-libs/BoofCVAndroid.jar"/>
 	<classpathentry kind="lib" path="/afs/inf.ed.ac.uk/group/teaching/sdp/sdp4/boofcv-v0.16-libs/BoofCV_OpenKinect.jar"/>
