@@ -2,7 +2,6 @@ package vision;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.List;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
@@ -184,30 +183,34 @@ public class SimpleViewer extends WindowAdapter implements CaptureCallback{
                 4. replace all values of 3 with windowSize
                 5. factor out color distance function if needed someplace else
                 */
-                
-        	int windowSize = 3; //arbitrary
+        	int windowSize = 5; //arbitrary
         		
         	ArrayList<int[]> probCoords = new ArrayList<int[]>();
-        	for(int i = 0; i < 639; i=i+3){
-        		for(int j=0; j < 480; j=j+3){
-        			int[] window = img.getRGB(i, j, 3, 3, null, 0, windowSize); // get rgb values, stores as ints for some reason...
+        	for(int i = 0; i < 639; i=i+windowSize){
+        		for(int j=0; j < 480; j=j+windowSize){
+        			int[] window = img.getRGB(i, j, windowSize, windowSize, null, 0, windowSize); // get rgb values, stores as ints for some reason...
         			int redCount = 0; 
         			for(int k=0; k < windowSize*windowSize; k++){
-					Color C1 = new Color(window[k]); // 
+        				Color C1 = new Color(window[k]); 
+        				Color C2 = new Color(255,0,0);
         				//color distance function, needs to be factored out
         				//ref - http://www.compuphase.com/cmetric.htm
-        				// our implicit C2 color is True Red(255,0,0), see above link
-        				int rmean = (C1.getRed() + 255)/2; // the 255 here comes from implicit True Red
-        				int red = C1.getRed() - 255;
-        				int blue = C1.getBlue();
-        				int green = C1.getGreen();
+        				// our implicit C2 color WAS True Red(255,0,0), now we use a definitive color
+        				
+        				
+        				int rmean = (C1.getRed() + C2.getRed())/2; // the 255 here comes from implicit True Red
+        				int red = C1.getRed() - C2.getRed();
+        				int blue = C1.getBlue() - C2.getBlue();
+        				int green = C1.getGreen() - C2.getGreen();
+        				
+        				
         				double distance = Math.sqrt((2.0 + rmean/256.0)*red*red + 4*green*green + (2 + (256 - rmean)/256.0)*blue*blue);
         				if (distance < 200){// some arbitrary threshold needs fine tuning, rough tuning ok
         					redCount++;
         					//TODO 1: ignore yellow
         				}
         			}
-        			if(redCount > 7){// arbitrary threshold, needs tuning
+        			if( redCount > 7 * windowSize*windowSize / 9 ){// arbitrary threshold, needs tuning
         				int[] tuple = {i,j};
         				probCoords.add(tuple);
         			}
@@ -215,17 +218,27 @@ public class SimpleViewer extends WindowAdapter implements CaptureCallback{
         	}
         	Graphics2D g = (Graphics2D) label.getGraphics();
         	// this draws the frame grabber
-                g.drawImage(img, 0, 0, width, height, null);
-                if(probCoords.size() > 0){
-                        // draws a pink oval around the ball
-                        g.setColor(Color.PINK);
-                	g.drawOval(
-                		probCoords.get(0)[0], 
-                		probCoords.get(0)[1], 
-                		15,
-                		15);
-                }
-                // recycle the frame
-                frame.recycle();
+            g.drawImage(img, 0, 0, width, height, null);
+            if(probCoords.size() > 0){
+            	// DEBUG code
+            	for(int[] x: probCoords){
+            		System.out.print(x[0] + " " + x[1] + "| ");
+            		System.out.print(new Color(img.getRGB(x[0], x[1])));
+            		
+            	}
+        		System.out.println("");
+        		//
+            	// draws a pink oval around the ball
+                g.setColor(Color.PINK);
+                g.drawLine(probCoords.get(0)[0] - 15 , probCoords.get(0)[1], probCoords.get(0)[0] + 15 , probCoords.get(0)[1]);
+                g.drawLine(probCoords.get(0)[0] , probCoords.get(0)[1] - 15, probCoords.get(0)[0], probCoords.get(0)[1] + 15);
+//                g.drawOval(
+//                	probCoords.get(0)[0], 
+//                	probCoords.get(0)[1], 
+//                	15,
+//                	15);
+            }
+            // recycle the frame
+            frame.recycle();
         }
 }
