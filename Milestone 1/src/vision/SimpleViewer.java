@@ -1,4 +1,4 @@
-package vision;
+package src.vision;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
