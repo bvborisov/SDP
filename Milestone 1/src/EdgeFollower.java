@@ -87,18 +87,18 @@ public class EdgeFollower {
 	}
 	
 	private static void goHome() {
-		double angle = 180-home.getHeading();
-		double distance = euclideanDistance(opp.getPose().getX()-home.getX(),  opp.getPose().getY()-home.getY());
-		
-		pilot.rotate(angle);
+		pilot.setTravelSpeed(rotateSpeed);
+		pilot.rotate(180-opp.getPose().getHeading());
 		while (pilot.isMoving()) {
 			
 		}
-		pilot.travel(distance);
+		pilot.setTravelSpeed(travelSpeed);
+		pilot.travel(euclideanDistance(opp.getPose().getX()-home.getX(),  opp.getPose().getY()-home.getY()));
 		while (pilot.isMoving()) {
 			
 		}
-		pilot.rotate(opp.getPose().getHeading()-home.getHeading());
+		pilot.setTravelSpeed(rotateSpeed);
+		pilot.rotate(-opp.getPose().getHeading());
 		while (pilot.isMoving()) {
 			
 		}
