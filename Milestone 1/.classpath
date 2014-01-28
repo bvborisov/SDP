@@ -2,5 +2,30 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.lejos.nxt.ldt.LEJOS_LIBRARY_CONTAINER/nxt"/>
+	<classpathentry kind="lib" path="/afs/inf.ed.ac.uk/user/s11/s1101380/Desktop/v4l4j-0.9.1/v4l4j.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="http://v4l4j.googlecode.com/svn/www/v4l4j-api"/>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="/afs/inf.ed.ac.uk/user/s11/s1101380/Desktop/v4l4j-0.9.1"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry kind="lib" path="/afs/inf.ed.ac.uk/user/s11/s1101380/Desktop/boofcv-v0.16-libs/BoofCV.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/afs/inf.ed.ac.uk/user/s11/s1101380/Desktop/boofcv-v0.16-docs.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/afs/inf.ed.ac.uk/user/s11/s1101380/Desktop/boofcv-v0.16-libs/BoofCVAndroid.jar"/>
+	<classpathentry kind="lib" path="/afs/inf.ed.ac.uk/user/s11/s1101380/Desktop/boofcv-v0.16-libs/BoofCV_OpenKinect.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/afs/inf.ed.ac.uk/user/s11/s1101380/Desktop/boofcv-v0.16-docs.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/afs/inf.ed.ac.uk/user/s11/s1101380/Desktop/boofcv-v0.16-libs/BoofCV_V4L4J.jar"/>
+	<classpathentry kind="lib" path="/afs/inf.ed.ac.uk/user/s11/s1101380/Desktop/boofcv-v0.16-libs/BoofCVXuggler.jar"/>
+	<classpathentry kind="lib" path="/afs/inf.ed.ac.uk/user/s11/s1101380/Desktop/boofcv-v0.16-libs/DDogleg.jar"/>
+	<classpathentry kind="lib" path="/afs/inf.ed.ac.uk/user/s11/s1101380/Desktop/boofcv-v0.16-libs/EJML.jar"/>
+	<classpathentry kind="lib" path="/afs/inf.ed.ac.uk/user/s11/s1101380/Desktop/boofcv-v0.16-libs/GeoRegression.jar"/>
+	<classpathentry kind="lib" path="/afs/inf.ed.ac.uk/user/s11/s1101380/Desktop/boofcv-v0.16-libs/jcodec-0.1.5.jar"/>
+	<classpathentry kind="lib" path="/afs/inf.ed.ac.uk/user/s11/s1101380/Desktop/boofcv-v0.16-libs/xstream-1.4.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
