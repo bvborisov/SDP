@@ -139,7 +139,77 @@ public class SimpleViewer extends WindowAdapter implements CaptureCallback{
                 // The exception is available through e.getCause()
                 e.printStackTrace();
         }
+        /*
+         * 	Finds the ball using normalised RGB colors.
+         * 
+         */
+        public static ArrayList<int[]> findBallrgb(
+        		BufferedImage img, 
+        		int windowSize, 
+        		int windowTolerance,
+        		double redThreshold)
+        {
+        	ArrayList<int[]> probCoords = new ArrayList<int[]>();
+        	int width = img.getWidth();
+        	int height = img.getHeight();
+        	for(int i = 0; i < width; i=i+windowSize){ 
+        		for(int j=0; j < height; j=j+windowSize){
+        			int[] window = img.getRGB(i, j, windowSize, windowSize, null, 0, windowSize); // get rgb values, stores as ints for some reason...
+        			int redCount = 0; 
+        			for(int k=0; k < windowSize*windowSize; k++){
+        				Color C1 = new Color(window[k]); 
+        				double r = (double)C1.getRed() / (C1.getRed() + C1.getBlue() + C1.getGreen());
+        				if(r > redThreshold){
+        					redCount++;
+        				}
+        			}
+        			if( redCount > windowTolerance ){// arbitrary threshold, needs tuning
+        				int[] tuple = {i,j};
+        				probCoords.add(tuple);
+        			}
+        		}
+        	}
+        	return probCoords;
+        }
+        /*
+         * Finds the ball using true RGB colors
+         */
+        public static ArrayList<int[]> findBallRGB(
+        		BufferedImage img, 
+        		int windowSize, 
+        		int windowTolerance,
+        		int distanceThreshold){
+        	ArrayList<int[]> probCoords = new ArrayList<int[]>();
+        	int width = img.getWidth();
+        	int height = img.getHeight();
+        	for(int i = 0; i < width; i=i+windowSize){ 
+        		for(int j=0; j < height; j=j+windowSize){
+        			int[] window = img.getRGB(i, j, windowSize, windowSize, null, 0, windowSize); // get rgb values, stores as ints for some reason...
+        			int redCount = 0; 
+        			for(int k=0; k < windowSize*windowSize; k++){
+        				Color C1 = new Color(window[k]); 
+        				Color C2 = Color.RED;
 
+        				int rmean = (C1.getRed() + C2.getRed())/2; // the 255 here comes from implicit True Red
+        				int red = C1.getRed() - C2.getRed();
+        				int blue = C1.getBlue() - C2.getBlue();
+        				int green = C1.getGreen() - C2.getGreen();
+        				
+        				//reference - http://www.compuphase.com/cmetric.htm
+        				double distance = Math.sqrt((2.0 + rmean/256.0)*red*red + 4*green*green + (2 + (256 - rmean)/256.0)*blue*blue);
+        				if (distance < distanceThreshold){// some arbitrary threshold needs fine tuning, rough tuning ok
+        					redCount++;
+        					//TODO 1: ignore yellow
+        				}
+        			}
+        			if( redCount > windowTolerance ){// arbitrary threshold, needs tuning
+        				int[] tuple = {i,j};
+        				probCoords.add(tuple);
+        			}
+        		}
+        	}
+        	return probCoords;
+        }
         /*
         This method contains all the current vision code and the frame handling code.
         The frame handling code is quite simple - it just fetches the frame from
@@ -151,71 +221,32 @@ public class SimpleViewer extends WindowAdapter implements CaptureCallback{
         public void nextFrame(VideoFrame frame) {
                 // This method is called when a new frame is ready.
                 // Don't forget to recycle it when done dealing with the frame.
-                
-                /* This piece of code calculates the frame rate
-                I don't know if it will be useful but it coudl be used
-                code copied over from SDP group 4 last year
-                */
-                
-        	long thisFrame = System.currentTimeMillis();
-        	int frameRate = (int) (1000 / (thisFrame - lastFrame));
-        	lastFrame = thisFrame;
         	
-                BufferedImage img = frame.getBufferedImage();
+            BufferedImage img = frame.getBufferedImage();
                 
-                /* Vision code:
+            /* Vision code:
                 We swipe a windowSize x windowSize window across the image
                 and for each window we compute how many of the pixels inside of it
                 are "close" to true red(255,0,0) by using some heuristic euclidean distance
                 based RGB function, see link for more info.
-                
+
                 If the count of the number of pixels is more than 7 we push the coordinates
                 of the window to a list of possible coords
-                
+
                 Finally we select the first coordinate pair from the list and we
                 draw an oval arround that point - it should represent the rough 
                 position of the ball.
-                
+
                 TODO: 
                 1. check threshhold for distance function, make it ignore Yellow
                 2. somehow use other probable coordinate pairs
                 3. we report top right coordinate of a window, should it be something else though?
                 4. replace all values of 3 with windowSize
                 5. factor out color distance function if needed someplace else
-                */
+             */
         	int windowSize = 5; //arbitrary
-        		
-        	ArrayList<int[]> probCoords = new ArrayList<int[]>();
-        	for(int i = 0; i < 639; i=i+windowSize){
-        		for(int j=0; j < 480; j=j+windowSize){
-        			int[] window = img.getRGB(i, j, windowSize, windowSize, null, 0, windowSize); // get rgb values, stores as ints for some reason...
-        			int redCount = 0; 
-        			for(int k=0; k < windowSize*windowSize; k++){
-        				Color C1 = new Color(window[k]); 
-        				Color C2 = new Color(255,0,0);
-        				//color distance function, needs to be factored out
-        				//ref - http://www.compuphase.com/cmetric.htm
-        				// our implicit C2 color WAS True Red(255,0,0), now we use a definitive color
-        				
-        				
-        				int rmean = (C1.getRed() + C2.getRed())/2; // the 255 here comes from implicit True Red
-        				int red = C1.getRed() - C2.getRed();
-        				int blue = C1.getBlue() - C2.getBlue();
-        				int green = C1.getGreen() - C2.getGreen();
-        				
-        				
-        				double distance = Math.sqrt((2.0 + rmean/256.0)*red*red + 4*green*green + (2 + (256 - rmean)/256.0)*blue*blue);
-        				if (distance < 200){// some arbitrary threshold needs fine tuning, rough tuning ok
-        					redCount++;
-        					//TODO 1: ignore yellow
-        				}
-        			}
-        			if( redCount > 7 * windowSize*windowSize / 9 ){// arbitrary threshold, needs tuning
-        				int[] tuple = {i,j};
-        				probCoords.add(tuple);
-        			}
-        		}
-        	}
+        	ArrayList<int[]> probCoords = findBallrgb(img, windowSize, 7*windowSize*windowSize/9, 0.70);
+        	//ArrayList<int[]> probCoords = findBallRGB(img, windowSize, 7*windowSize*windowSize/9, 200);
         	Graphics2D g = (Graphics2D) label.getGraphics();
         	// this draws the frame grabber
             g.drawImage(img, 0, 0, width, height, null);
@@ -224,19 +255,13 @@ public class SimpleViewer extends WindowAdapter implements CaptureCallback{
             	for(int[] x: probCoords){
             		System.out.print(x[0] + " " + x[1] + "| ");
             		System.out.print(new Color(img.getRGB(x[0], x[1])));
-            		
             	}
         		System.out.println("");
-        		//
-            	// draws a pink oval around the ball
+            	// draws a cross over the ball
                 g.setColor(Color.PINK);
                 g.drawLine(probCoords.get(0)[0] - 15 , probCoords.get(0)[1], probCoords.get(0)[0] + 15 , probCoords.get(0)[1]);
                 g.drawLine(probCoords.get(0)[0] , probCoords.get(0)[1] - 15, probCoords.get(0)[0], probCoords.get(0)[1] + 15);
-//                g.drawOval(
-//                	probCoords.get(0)[0], 
-//                	probCoords.get(0)[1], 
-//                	15,
-//                	15);
+
             }
             // recycle the frame
             frame.recycle();
