@@ -1,3 +1,5 @@
 /bin
 *.nxj
 *.nxd
+
+.classpath
