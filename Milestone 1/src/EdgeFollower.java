@@ -83,11 +83,14 @@ public class EdgeFollower {
 		System.out.println("DONE!");
 		System.out.println("Can I go home?");
 		Button.waitForAnyPress();
+		//Allow 1 second for finger to be removed before starting moving again.
+		Thread.sleep(1000);
 		goHome();
 	}
 	
 	private static void goHome() {
 		pilot.setTravelSpeed(rotateSpeed);
+		pilot.setRotateSpeed(40);
 		pilot.rotate(180-opp.getPose().getHeading());
 		while (pilot.isMoving()) {
 			
@@ -98,6 +101,7 @@ public class EdgeFollower {
 			
 		}
 		pilot.setTravelSpeed(rotateSpeed);
+		pilot.setRotateSpeed(80);
 		pilot.rotate(-opp.getPose().getHeading());
 		while (pilot.isMoving()) {
 			
