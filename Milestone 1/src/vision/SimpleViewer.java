@@ -173,8 +173,8 @@ public class SimpleViewer extends WindowAdapter implements CaptureCallback{
                 // Don't forget to recycle it when done dealing with the frame.
         	
             BufferedImage img = frame.getBufferedImage();
-            img = showSelectedColor("Ball", img, 0, 0.8f);
-            //img = contourOps("ball");
+            //img = showSelectedColor("Ball", img, 0, 0.8f);
+            img = contourOps("field", img);
             //img = showSelectedColor("Lines", img, 0.5f, 0.4f);
             //img = showSelectedColor("Field", img, 2.0f, 0.55f);
             Graphics2D g = (Graphics2D) label.getGraphics();	 	
@@ -220,15 +220,15 @@ public class SimpleViewer extends WindowAdapter implements CaptureCallback{
     				return output;
         }
         
-        public BufferedImage contourOps(String type) {
+        public BufferedImage contourOps(String type, BufferedImage inputImg) {
     		
-    		MultiSpectral<ImageFloat32> input= ConvertBufferedImage.convertFromMulti(segOutputBall, null, true, ImageFloat32.class);
+    		MultiSpectral<ImageFloat32> input= ConvertBufferedImage.convertFromMulti(inputImg, null, true, ImageFloat32.class);
             ImageUInt8 binary = new ImageUInt8(input.width,input.height);
             ImageSInt32 label = new ImageSInt32(input.width,input.height);
-            if (!type.equals("ball")){
-            	ThresholdImageOps.threshold(input.getBand(1),binary,(float)50,false);
+            if (type.equals("ball")){
+            	ThresholdImageOps.threshold(input.getBand(0),binary,(float)180,false);
             }
-            else {
+            else if (type.equals("field")) {
             	ThresholdImageOps.threshold(input.getBand(0),binary,(float)100,false);
             }
             ImageUInt8 filtered = BinaryImageOps.erode8(binary,null);
