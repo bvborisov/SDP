@@ -1,15 +1,30 @@
 package src.vision;
 
+import georegression.metric.UtilAngle;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
+
+import boofcv.alg.color.ColorHsv;
+import boofcv.alg.filter.binary.BinaryImageOps;
+import boofcv.alg.filter.binary.Contour;
+import boofcv.alg.filter.binary.ThresholdImageOps;
+import boofcv.core.image.ConvertBufferedImage;
+import boofcv.gui.binary.VisualizeBinaryData;
+import boofcv.gui.image.ShowImages;
+import boofcv.struct.image.ImageFloat32;
+import boofcv.struct.image.ImageSInt32;
+import boofcv.struct.image.ImageUInt8;
+import boofcv.struct.image.MultiSpectral;
 
 import au.edu.jcu.v4l4j.FrameGrabber;
 import au.edu.jcu.v4l4j.CaptureCallback;
@@ -36,6 +51,7 @@ public class SimpleViewer extends WindowAdapter implements CaptureCallback{
 
         private JLabel          label;
         private JFrame          frame;
+        private static BufferedImage segOutputBall;
 
 
 
@@ -143,73 +159,7 @@ public class SimpleViewer extends WindowAdapter implements CaptureCallback{
          * 	Finds the ball using normalised RGB colors.
          * 
          */
-        public static ArrayList<int[]> findBallrgb(
-        		BufferedImage img, 
-        		int windowSize, 
-        		int windowTolerance,
-        		double redThreshold)
-        {
-        	ArrayList<int[]> probCoords = new ArrayList<int[]>();
-        	int width = img.getWidth();
-        	int height = img.getHeight();
-        	for(int i = 0; i < width; i=i+windowSize){ 
-        		for(int j=0; j < height; j=j+windowSize){
-        			int[] window = img.getRGB(i, j, windowSize, windowSize, null, 0, windowSize); // get rgb values, stores as ints for some reason...
-        			int redCount = 0; 
-        			for(int k=0; k < windowSize*windowSize; k++){
-        				Color C1 = new Color(window[k]); 
-        				double r = (double)C1.getRed() / (C1.getRed() + C1.getBlue() + C1.getGreen());
-        				if(r > redThreshold){
-        					redCount++;
-        				}
-        			}
-        			if( redCount > windowTolerance ){// arbitrary threshold, needs tuning
-        				int[] tuple = {i,j};
-        				probCoords.add(tuple);
-        			}
-        		}
-        	}
-        	return probCoords;
-        }
-        /*
-         * Finds the ball using true RGB colors
-         */
-        public static ArrayList<int[]> findBallRGB(
-        		BufferedImage img, 
-        		int windowSize, 
-        		int windowTolerance,
-        		int distanceThreshold){
-        	ArrayList<int[]> probCoords = new ArrayList<int[]>();
-        	int width = img.getWidth();
-        	int height = img.getHeight();
-        	for(int i = 0; i < width; i=i+windowSize){ 
-        		for(int j=0; j < height; j=j+windowSize){
-        			int[] window = img.getRGB(i, j, windowSize, windowSize, null, 0, windowSize); // get rgb values, stores as ints for some reason...
-        			int redCount = 0; 
-        			for(int k=0; k < windowSize*windowSize; k++){
-        				Color C1 = new Color(window[k]); 
-        				Color C2 = Color.RED;
-
-        				int rmean = (C1.getRed() + C2.getRed())/2; // the 255 here comes from implicit True Red
-        				int red = C1.getRed() - C2.getRed();
-        				int blue = C1.getBlue() - C2.getBlue();
-        				int green = C1.getGreen() - C2.getGreen();
-        				
-        				//reference - http://www.compuphase.com/cmetric.htm
-        				double distance = Math.sqrt((2.0 + rmean/256.0)*red*red + 4*green*green + (2 + (256 - rmean)/256.0)*blue*blue);
-        				if (distance < distanceThreshold){// some arbitrary threshold needs fine tuning, rough tuning ok
-        					redCount++;
-        					//TODO 1: ignore yellow
-        				}
-        			}
-        			if( redCount > windowTolerance ){// arbitrary threshold, needs tuning
-        				int[] tuple = {i,j};
-        				probCoords.add(tuple);
-        			}
-        		}
-        	}
-        	return probCoords;
-        }
+        
         /*
         This method contains all the current vision code and the frame handling code.
         The frame handling code is quite simple - it just fetches the frame from
@@ -223,47 +173,70 @@ public class SimpleViewer extends WindowAdapter implements CaptureCallback{
                 // Don't forget to recycle it when done dealing with the frame.
         	
             BufferedImage img = frame.getBufferedImage();
-                
-            /* Vision code:
-                We swipe a windowSize x windowSize window across the image
-                and for each window we compute how many of the pixels inside of it
-                are "close" to true red(255,0,0) by using some heuristic euclidean distance
-                based RGB function, see link for more info.
-
-                If the count of the number of pixels is more than 7 we push the coordinates
-                of the window to a list of possible coords
-
-                Finally we select the first coordinate pair from the list and we
-                draw an oval arround that point - it should represent the rough 
-                position of the ball.
-
-                TODO: 
-                1. check threshhold for distance function, make it ignore Yellow
-                2. somehow use other probable coordinate pairs
-                3. we report top right coordinate of a window, should it be something else though?
-                4. replace all values of 3 with windowSize
-                5. factor out color distance function if needed someplace else
-             */
-        	int windowSize = 5; //arbitrary
-        	ArrayList<int[]> probCoords = findBallrgb(img, windowSize, 7*windowSize*windowSize/9, 0.70);
-        	//ArrayList<int[]> probCoords = findBallRGB(img, windowSize, 7*windowSize*windowSize/9, 200);
-        	Graphics2D g = (Graphics2D) label.getGraphics();
-        	// this draws the frame grabber
+            img = showSelectedColor("Ball", img, 0, 0.8f);
+            //img = contourOps("ball");
+            //img = showSelectedColor("Lines", img, 0.5f, 0.4f);
+            //img = showSelectedColor("Field", img, 2.0f, 0.55f);
+            Graphics2D g = (Graphics2D) label.getGraphics();	 	
+            // this draws the frame grabber	 	
             g.drawImage(img, 0, 0, width, height, null);
-            if(probCoords.size() > 0){
-            	// DEBUG code
-            	for(int[] x: probCoords){
-            		System.out.print(x[0] + " " + x[1] + "| ");
-            		System.out.print(new Color(img.getRGB(x[0], x[1])));
-            	}
-        		System.out.println("");
-            	// draws a cross over the ball
-                g.setColor(Color.PINK);
-                g.drawLine(probCoords.get(0)[0] - 15 , probCoords.get(0)[1], probCoords.get(0)[0] + 15 , probCoords.get(0)[1]);
-                g.drawLine(probCoords.get(0)[0] , probCoords.get(0)[1] - 15, probCoords.get(0)[0], probCoords.get(0)[1] + 15);
-
-            }
+            
             // recycle the frame
             frame.recycle();
         }
+        
+        public BufferedImage showSelectedColor( String name , BufferedImage image , float hue , float saturation ){
+        	MultiSpectral<ImageFloat32> input = ConvertBufferedImage.convertFromMulti(image,null,true,ImageFloat32.class);
+    		MultiSpectral<ImageFloat32> hsv = new MultiSpectral<ImageFloat32>(ImageFloat32.class,input.width,input.height,3);
+    		
+    		// Convert into HSV
+    				ColorHsv.rgbToHsv_F32(input,hsv);
+    		 
+    				// Pixels which are more than this different from the selected color are set to black
+    				float maxDist2 = 0.4f*0.4f;
+    		 
+    				// Extract hue and saturation bands which are independent of intensity
+    				ImageFloat32 H = hsv.getBand(0);
+    				ImageFloat32 S = hsv.getBand(1);
+    		 
+    				// Adjust the relative importance of Hue and Saturation
+    				float adjustUnits = (float)(Math.PI/2.0);
+    		 
+    				// step through each pixel and mark how close it is to the selected color
+    				BufferedImage output = new BufferedImage(input.width,input.height,BufferedImage.TYPE_INT_RGB);
+    				for( int y = 0; y < hsv.height; y++ ) {
+    					for( int x = 0; x < hsv.width; x++ ) {
+    						// remember Hue is an angle in radians, so simple subtraction doesn't work
+    						float dh = UtilAngle.dist(H.unsafe_get(x,y),hue);
+    						float ds = (S.unsafe_get(x,y)-saturation)*adjustUnits;
+    		 
+    						// this distance measure is a bit naive, but good enough for this demonstration
+    						float dist2 = dh*dh + ds*ds;
+    						if( dist2 <= maxDist2 ) {
+    							output.setRGB(x,y,image.getRGB(x,y));
+    						}
+    					}
+    				}
+    				return output;
+        }
+        
+        public BufferedImage contourOps(String type) {
+    		
+    		MultiSpectral<ImageFloat32> input= ConvertBufferedImage.convertFromMulti(segOutputBall, null, true, ImageFloat32.class);
+            ImageUInt8 binary = new ImageUInt8(input.width,input.height);
+            ImageSInt32 label = new ImageSInt32(input.width,input.height);
+            if (!type.equals("ball")){
+            	ThresholdImageOps.threshold(input.getBand(1),binary,(float)50,false);
+            }
+            else {
+            	ThresholdImageOps.threshold(input.getBand(0),binary,(float)100,false);
+            }
+            ImageUInt8 filtered = BinaryImageOps.erode8(binary,null);
+            filtered = BinaryImageOps.dilate8(filtered, null);
+            List<Contour> contours = BinaryImageOps.contour(filtered, 8, label);
+            
+            BufferedImage visualContour = VisualizeBinaryData.renderContours(contours,0xFFFFFF,0xFF2020,input.width,input.height,null);
+            
+            return visualContour;
+    	}
 }
