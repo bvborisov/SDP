@@ -1,0 +1,7 @@
+package kicking;
+
+import lejos.nxt.Motor;
+
+public class Kick {
+
+}
