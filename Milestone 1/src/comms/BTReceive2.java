@@ -31,20 +31,18 @@ public class BTReceive2 {
 			DataInputStream dis = btc.openDataInputStream();
 			DataOutputStream dos = btc.openDataOutputStream();
 			
-			//Read integer from stream and show on LCD
-			int n = dis.readInt();
-			LCD.drawInt(n,7,0,1);
-			LCD.refresh();
+			for(int i=0;i<50;i++) {
+				int n = dis.readInt();
+				LCD.drawInt(n,7,0,1);
+				LCD.refresh();
+				//dos.writeInt(-n);
+				//dos.flush();
+			}
 			
 			//Close connections and update streams
 			dis.close();
 			dos.close();
-			Thread.sleep(100); // wait for data to drain
-			LCD.clear();
-			LCD.drawString(closing,0,0);
-			LCD.refresh();
-			btc.close();
-			LCD.clear();
+			//btc.close();
 		}
 	}
 }
