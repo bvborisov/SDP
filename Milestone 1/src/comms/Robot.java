@@ -54,6 +54,7 @@ public class Robot {
 				option2 = byteBuffer[2];
 				option3 = byteBuffer[3];
 				
+				//Based on the received command call the relevant method
 				switch(command) {
 					case FORWARDS:
 						LCD.clear();
