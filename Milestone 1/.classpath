@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.lejos.nxt.ldt.LEJOS_LIBRARY_CONTAINER/nxt"/>
 	<classpathentry kind="lib" path="/group/teaching/sdp/sdp4/v4l4j-0.9.1/v4l4j.jar">
 		<attributes>
@@ -19,6 +20,5 @@
 	<classpathentry kind="lib" path="/afs/inf.ed.ac.uk/group/teaching/sdp/sdp4/bluecove.jar"/>
 	<classpathentry kind="lib" path="/afs/inf.ed.ac.uk/group/teaching/sdp/sdp4/bluecove-gpl.jar"/>
 	<classpathentry kind="lib" path="/afs/inf.ed.ac.uk/group/teaching/sdp/sdp4/pccomm.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
