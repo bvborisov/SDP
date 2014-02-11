@@ -65,7 +65,7 @@ public class Defender {
 		//Based on the received command call the relevant method
 		switch(command) {
 			
-			case FORWARDS:
+			case FORWARDS: 
 				LCD.clear();
 				LCD.drawString("Forwards!", 0, 0);				
 				pilot.forward();
