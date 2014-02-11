@@ -1,4 +1,4 @@
-package movement;
+package robot;
 
 import java.io.InputStream;
 import java.io.OutputStream;
