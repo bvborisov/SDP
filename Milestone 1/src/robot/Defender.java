@@ -17,9 +17,6 @@ public class Defender {
 
 	//Setting up the robot
 	static final OmniPilot pilot = new OmniPilot(6.5f, 4.7f, Motor.A, Motor.C, Motor.B, true, true);
-   // private static double rotateSpeed = 5;
-  //  private static double travelSpeed = 20;
-
 	
     // Commands
  	private final static int NOTHING = 0;
@@ -54,6 +51,7 @@ public class Defender {
 	int option1, option2, option3;
 
 	while ((command != QUIT) && !(Button.ESCAPE.isDown())) {
+		
 		// Get command from the input stream
 		byte[] byteBuffer = new byte[4];
 		dis.read(byteBuffer);
@@ -68,30 +66,43 @@ public class Defender {
 		switch(command) {
 			
 			case FORWARDS:
+				LCD.clear();
+				LCD.drawString("Forwards!", 0, 0);				
 				pilot.forward();
 				break;
 			
 			case BACKWARDS:
+				LCD.clear();
+				LCD.drawString("BACKWARDS!", 0, 0);				
 				pilot.backward();
 				break;				
 			
 			case STOP:
+				LCD.clear();
+				LCD.drawString("STOP!", 0, 0);				
 				pilot.stop();
 				break;	
 				
 //			case KICK:
-//				
+//			LCD.clear();
+//			LCD.drawString("KICK!", 0, 0);			
 //				break;
 				
 			case SPEED:
+				LCD.clear();
+				LCD.drawString("SPEED SET!", 0, 0);				
 				pilot.setTravelSpeed(option1);
 				break;
 			
 			case ROTATELEFT:
+				LCD.clear();
+				LCD.drawString("ROTATE LEFT!", 0, 0);				
 				pilot.rotate(option1);
 				break;	
 			
 			case ROTATERIGHT:
+				LCD.clear();
+				LCD.drawString("ROTATE RIGHT!", 0, 0);				
 				pilot.rotate(option1);
 				break;
 								
