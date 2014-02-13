@@ -1,5 +1,6 @@
 package robot;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -24,9 +25,10 @@ public class Attacker {
 	private final static int SPEED = 5;
 	private final static int ROTATELEFT = 6;
 	private final static int ROTATERIGHT = 7;
+	private final static int MOVING = 8;
 	private final static int QUIT = 9;
 	
-	private final static DifferentialPilot pilot = new DifferentialPilot(5.6, 17.5, Motor.B, Motor.A, false);
+	private final static DifferentialPilot pilot = new DifferentialPilot(5.6, 6.7, Motor.B, Motor.A, false);
 
 	public static void main(String [] args)  throws Exception {
 		try {
@@ -90,7 +92,7 @@ public class Attacker {
 					case ROTATELEFT:
 						LCD.clear();
 						LCD.drawString("ROTATE LEFT!", 0, 0);
-						rotateLeft();
+						rotateLeft(option1);
 						break;	
 					case ROTATERIGHT:
 						LCD.clear();
@@ -101,7 +103,9 @@ public class Attacker {
 						LCD.clear();
 						LCD.drawString("QUIT!", 0, 0);
 						//Add call to FORWARDS method
-						break;						
+						break;
+					case MOVING:
+						moving();
 					default:
 				}
 			}
@@ -122,8 +126,23 @@ public class Attacker {
 		}
 	}
 	
-	public static void forwards() {
+	public static void forwards() throws IOException {
 		pilot.forward();
+		byte[] distance = toBytes((int)pilot.getMovementIncrement() );
+		dos.write(distance);
+		dos.flush();
+	}
+	
+	public static byte[] toBytes(int i)
+	{
+	  byte[] result = new byte[4];
+
+	  result[0] = (byte) (i >> 24);
+	  result[1] = (byte) (i >> 16);
+	  result[2] = (byte) (i >> 8);
+	  result[3] = (byte) (i /*>> 0*/);
+
+	  return result;
 	}
 	
 	public static void backwards() {
@@ -144,12 +163,24 @@ public class Attacker {
 		pilot.setTravelSpeed(speed);
 	}
 	
-	public static void rotateLeft() {
+	public static void rotateLeft(int angle) {
 		pilot.setRotateSpeed(10);
-		pilot.rotateLeft();
+		pilot.rotate(angle);
 	}
 	public static void rotateRight() {
 		pilot.setRotateSpeed(10);
 		pilot.rotateRight();
+	}
+	
+	public static void moving() throws IOException{
+		byte[] isMOving = {0,0,0,1};
+		byte[] isNotMoving = {0,0,1,0};
+		if (pilot.isMoving()) {
+			dos.write(isMOving);
+			dos.flush();
+		} else {
+			dos.write(isNotMoving);
+			dos.flush();	
+		}
 	}
 }
