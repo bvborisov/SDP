@@ -132,5 +132,4 @@ public class Defender {
 				LCD.drawString("Error message is null", 2, 3);
 		}
 	}
-
 }
