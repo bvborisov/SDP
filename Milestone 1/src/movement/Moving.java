@@ -1,4 +1,4 @@
-package src.movement;
+package movement;
 
 import lejos.robotics.localization.OdometryPoseProvider;
 import lejos.robotics.navigation.DifferentialPilot;
