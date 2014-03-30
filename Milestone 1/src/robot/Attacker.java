@@ -175,23 +175,23 @@ public class Attacker {
 	}
 	
 	public static void grab() throws Exception {
-		Motor.C.setSpeed(40);
-		Motor.C.rotate(-90);
+		Motor.C.setSpeed(400);
+		Motor.C.rotate(-75);
 		done();
 	}
 	
 	public static void kick() throws Exception {
 		Motor.C.setSpeed(900);
-		Motor.C.rotate(120);
-		rest();
+		Motor.C.rotate(75);
+		//rest();
 		done();
 	}
 	
-	public static void rest() throws Exception {
-		Motor.C.setSpeed(40);
-		Motor.C.rotate(-10);
-		done();
-	}
+//	public static void rest() throws Exception {
+//		Motor.C.setSpeed(40);
+//		Motor.C.rotate(-10);
+//		done();
+//	}
 	
 	public static void setSpeed(int speed) throws Exception {
 		pilot.setTravelSpeed(speed);
