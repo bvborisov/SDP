@@ -206,7 +206,7 @@ public class Defender {
 	}
 	
 	public static void rotateLeft(double angle1, double angle2) throws Exception {
-		pilot.rotate(angle1 + angle2, false);
+		pilot.rotate(-(angle1 + angle2), false);
 		done();
 	}
 	public static void rotateRight(double angle1, double angle2, double angle3) throws Exception {
