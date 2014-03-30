@@ -106,7 +106,7 @@ public class Attacker {
 						*/case ROTATELEFT:
 							LCD.clear();
 							LCD.drawString("ROTATE LEFT!", 0, 0);
-							rotateLeft(option1, option2, option3);
+							rotateLeft(option1, option2);
 							break;	
 						case ROTATERIGHT:
 							LCD.clear();
@@ -203,9 +203,9 @@ public class Attacker {
 		done();
 	}
 	
-	public static void rotateLeft(double angle1, double angle2, double angle3) throws Exception {
+	public static void rotateLeft(double angle1, double angle2) throws Exception {
 		pilot.setRotateSpeed(10);
-		pilot.rotate(angle1 + angle2 + angle3, false);
+		pilot.rotate(angle1 + angle2, false);
 		done();
 	}
 	public static void rotateRight(double angle1, double angle2, double angle3) throws Exception {

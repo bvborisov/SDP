@@ -9,13 +9,14 @@ public class TestK {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Motor.C.setSpeed(20000);
 		
 		while (true) {
 			Button.waitForAnyPress();
-			Motor.C.rotate(-90);
+			Motor.C.setSpeed(400);
+			Motor.C.rotate(-75);
 			Button.waitForAnyPress();
-			Motor.C.rotate(90);
+			Motor.C.setSpeed(900);
+			Motor.C.rotate(75);
 			
 		}
 	}
