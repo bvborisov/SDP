@@ -1,9 +1,7 @@
 package robot;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import lejos.nxt.LCD;
 import lejos.nxt.Button;
 import lejos.nxt.comm.BTConnection;
@@ -12,6 +10,7 @@ import lejos.nxt.Motor;
 import lejos.robotics.navigation.DifferentialPilot;
 
 public class Attacker {
+	
 	// IO control
 	private static InputStream dis;
 	private static OutputStream dos;
@@ -30,8 +29,8 @@ public class Attacker {
 	private final static int MOVING = 9;
 	private final static int QUIT = 10;
 	
-	private final static DifferentialPilot pilot = new DifferentialPilot(28.0, 15.0, Motor.B, Motor.A, false);
-
+	//private final static DifferentialPilot pilot = new DifferentialPilot(28.0, 15.0, Motor.B, Motor.A, false);
+	private final static DifferentialPilot pilot = new DifferentialPilot(13.4, 16.5, Motor.B, Motor.A);
 	public static void main(String [] args)  throws Exception {
 
 			while (true) {
@@ -106,7 +105,7 @@ public class Attacker {
 						*/case ROTATELEFT:
 							LCD.clear();
 							LCD.drawString("ROTATE LEFT!", 0, 0);
-							rotateLeft(option1, option2, option3);
+							rotateLeft(option1, option2);
 							break;	
 						case ROTATERIGHT:
 							LCD.clear();
@@ -147,6 +146,7 @@ public class Attacker {
 			
 	
 	public static void forwards(int distance, int distance2) throws Exception {
+		pilot.setTravelSpeed(10);
 		pilot.travel(distance + distance2, false);
 		done();
 	}
@@ -174,14 +174,14 @@ public class Attacker {
 	}
 	
 	public static void grab() throws Exception {
-		Motor.C.setSpeed(40);
-		Motor.C.rotate(-90);
+		Motor.C.setSpeed(2000);
+		Motor.C.rotate(14);
 		done();
 	}
 	
 	public static void kick() throws Exception {
-		Motor.C.setSpeed(900);
-		Motor.C.rotate(120);
+		Motor.C.setSpeed(2000);
+		Motor.C.rotate(-14);
 		rest();
 		done();
 	}
@@ -203,9 +203,9 @@ public class Attacker {
 		done();
 	}
 	
-	public static void rotateLeft(double angle1, double angle2, double angle3) throws Exception {
-		pilot.setRotateSpeed(10);
-		pilot.rotate(angle1 + angle2 + angle3, false);
+	public static void rotateLeft(double angle1, double angle2) throws Exception {
+		pilot.setRotateSpeed(30);
+		pilot.rotate(angle1 + angle2, false);
 		done();
 	}
 	public static void rotateRight(double angle1, double angle2, double angle3) throws Exception {

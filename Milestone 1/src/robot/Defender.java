@@ -17,8 +17,7 @@ public class Defender {
 	private static OutputStream dos;
 
 	// Setting up the robot
-	static final DifferentialPilot pilot = new DifferentialPilot(40.5, 16.5,
-			Motor.B, Motor.A);
+	static final DifferentialPilot pilot = new DifferentialPilot(40.5, 16.5, Motor.B, Motor.A);
 
 	// Commands
 	private final static int NOTHING = 0;
