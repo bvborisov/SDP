@@ -12,7 +12,7 @@ public class DefenderBrick {
 
 	//Setting up the robot
 	//static final OmniPilot pilot = new OmniPilot(6.5f, 4.7f, Motor.A, Motor.C, Motor.B, true, true);
-	private final static DifferentialPilot pilot = new DifferentialPilot(13.4, 16.5, Motor.B, Motor.A);
+	private final static DifferentialPilot pilot = new DifferentialPilot(8.16, 12.2, Motor.B, Motor.A);
  	
  	public static void main(String[] args) throws Exception {
 			

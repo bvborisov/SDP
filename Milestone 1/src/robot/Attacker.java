@@ -32,7 +32,8 @@ public class Attacker {
 	
 	//private final static DifferentialPilot pilot = new DifferentialPilot(28.0, 15.0, Motor.B, Motor.A, false);	private final static DifferentialPilot pilot = new DifferentialPilot(13.4, 16.5, Motor.B, Motor.A);
 	private final static DifferentialPilot pilot = new DifferentialPilot(13.4, 16.5, Motor.B, Motor.A);
-	
+	//private final static DifferentialPilot pilot = new DifferentialPilot(8.16, 12.2, Motor.B, Motor.A);
+
 	public static void main(String [] args)  throws Exception {
 
 			while (true) {
