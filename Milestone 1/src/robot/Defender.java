@@ -19,7 +19,7 @@ public class Defender {
 	// Commands
 	private final static int NOTHING = 0;
 	private final static int FORWARDS = 1;
-	private final static int BACKWARDS = 2;
+	private final static int BACKWARDSC = 2;
 	private final static int STOP = 3;
 	private final static int GRAB = 4;
 	private final static int KICK = 5;
@@ -29,7 +29,8 @@ public class Defender {
 	private final static int ROTATERIGHT = 8;
 	private final static int MOVING = 9;
 	private final static int QUIT = 10;
-	
+	private final static int FORWARDSC = 11;
+
 	//private final static DifferentialPilot pilot = new DifferentialPilot(28.0, 15.0, Motor.B, Motor.A, false);	private final static DifferentialPilot pilot = new DifferentialPilot(13.4, 16.5, Motor.B, Motor.A);
 	//private final static DifferentialPilot pilot = new DifferentialPilot(13.4, 16.5, Motor.B, Motor.A);
 	private final static DifferentialPilot pilot = new DifferentialPilot(8.16, 12.2, Motor.B, Motor.A);
@@ -75,11 +76,11 @@ public class Defender {
 							LCD.drawString("Forwards!", 0, 0);
 							forwards(option1, option2);
 							break;
-						case BACKWARDS:
+						case BACKWARDSC:
 							LCD.clear();
 							LCD.drawString("BACKWARDS!", 0, 0);
-							backwards();
-							break;				
+							backwardsC();
+							break;					
 						case STOP:
 							LCD.clear();
 							LCD.drawString("STOP!", 0, 0);
@@ -119,6 +120,11 @@ public class Defender {
 							LCD.clear();
 							LCD.drawString("MOVING?", 0, 0);
 							moving();
+							break;
+						case FORWARDSC:
+							LCD.clear();
+							LCD.drawString("FORWARDSC!", 0, 0);
+							forwardsC();
 							break;
 						case QUIT:
 							LCD.clear();
@@ -237,5 +243,22 @@ public class Defender {
 		byte[] done = {12, 0, 0, 0};
 	    dos.write(done);
 	    dos.flush();
+	}
+	public static void forwardsC() throws Exception {
+		
+		//Do done first to let PC know that the robot is ready for another command
+		// but keep in mind that the next command must be waited on the pc end
+		
+		done();
+		pilot.forward();
+	}
+	
+	public static void backwardsC() throws Exception {
+		
+		//Do done first to let PC know that the robot is ready for another command
+		// but keep in mind that the next command must be waited on the pc end
+		
+		done();
+		pilot.backward();
 	}
 }
