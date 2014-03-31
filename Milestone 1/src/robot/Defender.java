@@ -79,7 +79,8 @@ public class Defender {
 						case BACKWARDSC:
 							LCD.clear();
 							LCD.drawString("BACKWARDS!", 0, 0);
-							backwardsC();
+							setSpeed(20);
+							forwardsC();
 							break;					
 						case STOP:
 							LCD.clear();
@@ -124,7 +125,8 @@ public class Defender {
 						case FORWARDSC:
 							LCD.clear();
 							LCD.drawString("FORWARDSC!", 0, 0);
-							forwardsC();
+							setSpeed(20);
+							backwardsC();
 							break;
 						case QUIT:
 							LCD.clear();
