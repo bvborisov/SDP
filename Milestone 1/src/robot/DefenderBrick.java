@@ -20,21 +20,21 @@ public class DefenderBrick {
  
 
 		Button.waitForAnyPress();
-		pilot.setTravelSpeed(20.0);
-		pilot.setRotateSpeed(30);
-		pilot.travel(-30.0);
-		pilot.stop();
-//		Button.waitForAnyPress();
+		pilot.setRotateSpeed(800);
+		pilot.setTravelSpeed(20);
 		
-		pilot.rotate(90);
-//		Button.waitForAnyPress();
-		pilot.rotate(-90);
-//		Button.waitForAnyPress();
-		
-		pilot.setTravelSpeed(20.0);
-		pilot.travel(30.0);
-		pilot.stop();
+		pilot.travel(-30);
 		Button.waitForAnyPress();
+		pilot.setTravelSpeed(25);
+		pilot.travel(30);
+		Button.waitForAnyPress();
+		pilot.setTravelSpeed(30);
+		pilot.travel(-30);
+		Button.waitForAnyPress();
+		pilot.setTravelSpeed(35);
+		pilot.travel(30);
+		Button.waitForAnyPress();
+		pilot.stop();
 		
 	}
 

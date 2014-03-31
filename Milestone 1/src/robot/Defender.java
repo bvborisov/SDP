@@ -149,6 +149,7 @@ public class Defender {
 			
 	
 	public static void forwards(int distance, int distance2) throws Exception {
+		pilot.setTravelSpeed(20);
 		pilot.travel(-(distance + distance2), false);
 		done();
 	}
@@ -206,6 +207,7 @@ public class Defender {
 	}
 	
 	public static void rotateLeft(double angle1, double angle2) throws Exception {
+		pilot.setRotateSpeed(700);
 		pilot.rotate(-(angle1 + angle2), false);
 		done();
 	}
