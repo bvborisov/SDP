@@ -18,7 +18,7 @@ public class Attacker {
 	// Commands
 	private final static int NOTHING = 0;
 	private final static int FORWARDS = 1;
-	private final static int BACKWARDS = 2;
+	private final static int BACKWARDSC = 2;
 	private final static int STOP = 3;
 	private final static int GRAB = 4;
 	private final static int KICK = 5;
@@ -28,9 +28,10 @@ public class Attacker {
 	private final static int ROTATERIGHT = 8;
 	private final static int MOVING = 9;
 	private final static int QUIT = 10;
+	private final static int FORWARDSC = 11;
 	
-	//private final static DifferentialPilot pilot = new DifferentialPilot(28.0, 15.0, Motor.B, Motor.A, false);
-	private final static DifferentialPilot pilot = new DifferentialPilot(13.4, 16.5, Motor.B, Motor.A);
+	private final static DifferentialPilot pilot = new DifferentialPilot(22.2, 16.2, Motor.B, Motor.A, false);
+
 	public static void main(String [] args)  throws Exception {
 
 			while (true) {
@@ -72,10 +73,10 @@ public class Attacker {
 							LCD.drawString("Forwards!", 0, 0);
 							forwards(option1, option2);
 							break;
-						case BACKWARDS:
+						case BACKWARDSC:
 							LCD.clear();
 							LCD.drawString("BACKWARDS!", 0, 0);
-							backwards();
+							backwardsC();
 							break;				
 						case STOP:
 							LCD.clear();
@@ -117,6 +118,11 @@ public class Attacker {
 							LCD.drawString("MOVING?", 0, 0);
 							moving();
 							break;
+						case FORWARDSC:
+							LCD.clear();
+							LCD.drawString("FORWARDSC!", 0, 0);
+							forwardsC();
+							break;
 						case QUIT:
 							LCD.clear();
 							LCD.drawString("QUIT!", 0, 0);
@@ -151,6 +157,25 @@ public class Attacker {
 		done();
 	}
 	
+	
+	public static void forwardsC() throws Exception {
+		
+		//Do done first to let PC know that the robot is ready for another command
+		// but keep in mind that the next command must be waited on the pc end
+		
+		done();
+		pilot.forward();
+	}
+	
+	public static void backwardsC() throws Exception {
+		
+		//Do done first to let PC know that the robot is ready for another command
+		// but keep in mind that the next command must be waited on the pc end
+		
+		done();
+		pilot.backward();
+	}
+	
 	public static byte[] toBytes(int i)
 	{
 	  byte[] result = new byte[4];
@@ -161,11 +186,6 @@ public class Attacker {
 	  result[3] = (byte) (i /*>> 0*/);
 
 	  return result;
-	}
-
-	public static void backwards() throws Exception {
-		pilot.backward();
-		done();
 	}
 	
 	public static void stop() throws Exception {

@@ -1,4 +1,4 @@
-package robot;
+2package robot;
 
 import lejos.nxt.Button;
 import lejos.nxt.Motor;
@@ -6,14 +6,23 @@ import lejos.nxt.Motor;
 public class TestK {
 
 	public static void main(String[] args) {
+
 		
-		Motor.C.setSpeed(250);
+
+
+
 		
 		while (true) {
 			Button.waitForAnyPress();
-			Motor.C.rotate(-90);
+			Motor.C.setSpeed(400);
+			Motor.C.rotate(-75);
 			Button.waitForAnyPress();
-			Motor.C.rotate(90);
+
+
+			Motor.C.setSpeed(900);
+			Motor.C.rotate(75);
+			
+
 		}
 		
 		
