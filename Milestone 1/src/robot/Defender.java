@@ -187,13 +187,13 @@ public class Defender {
 	
 	public static void grab() throws Exception {
 		Motor.C.setSpeed(400);
-		Motor.C.rotate(-75);
+		Motor.C.rotate(-60);
 		done();
 	}
 	
 	public static void kick() throws Exception {
 		Motor.C.setSpeed(900);
-		Motor.C.rotate(75);
+		Motor.C.rotate(60);
 		done();
 	}
 	
